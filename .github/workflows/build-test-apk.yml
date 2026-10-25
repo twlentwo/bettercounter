@@ -20,7 +20,13 @@ jobs:
           distribution: temurin
           java-version: '17'
       - name: Install target Android SDK
-        run: sdkmanager "platforms;android-37.0"
+        run: |
+          SDK_ROOT=/usr/local/lib/android/sdk
+          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
+          SDKMANAGER=$(find "$SDK_ROOT/cmdline-tools" -type f -name sdkmanager | head -n 1)
+          test -n "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null
+          "$SDKMANAGER" "platforms;android-37.0"
       - name: Build test APK
         run: |
           chmod +x gradlew
